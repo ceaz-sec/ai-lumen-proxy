@@ -33,18 +33,13 @@ BLOCKED = [
 
 def request(flow: http.HTTPFlow):
     host = flow.request.pretty_host
-    pii = "mastercard"
-
-    if pii in flow.request.get_text(strict=False):
-        print(f"Found '{pii}' in request URL: {flow.request.url}")
-
     for pattern in BLOCKED:
         if pattern in flow.request.pretty_url:
             flow.response = http.Response.make(
                 302,
                 b"Blocked by Securty Policy, Flagged to your Security Team.",
-                #{"Content-Type": "text/plain"},
-                {"Location": "https://google.com"} #Redirect Traffic
+                {"Content-Type": "text/plain"}, #Blocks Traffic
+                #{"Location": "https://google.com"} #Redirect Traffic
             )
             logging.warning(f"SUSPICIOUS_DOMAIN | {host} | {flow.request.url}")
             break
